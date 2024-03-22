@@ -1,3 +1,3 @@
-All files are parameterized s.t. they are easily adaptable.
+Files are parameterized s.t. they are easily adaptable.
 
-Designed to be printed on Enver 3 v2.
+Designed to be printed on an Ender 3 v2.
