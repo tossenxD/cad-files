@@ -1,15 +1,22 @@
+/* This file contains a desktop speaker stand that serves
+   two purposes; (I) get the speaker off the desk (possibly
+   onto some foam or other anti-vibrational material), and
+   (II) tilt the speaker towards your ear.
+*/
+
 /** BODY PARAMS **/
-l = 210;        // length in mm
-w = 160;        // width in mm
-a = 15;         // angle in degrees
+l = 210; // length (along desk) in mm
+w = 160; // width in mm
+a = 15;  // angle in degrees
+t = 25;  // thickness in mm
+
+/** AUTO-TUNED BODY PARAMS **/
 h = tan(a) * l; // height in mm
-t = 25;         // thickness in mm
 
 /** REAR PARAMS **/
-rw = w;  // width in mm
-rl = 25; // length in mm
+rw = w;   // width in mm
+rl = 25;  // length (along tilted surface) in mm
 rh = h/2; // height in mm
-
 
 /** BODY **/
 difference(){
