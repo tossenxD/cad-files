@@ -80,7 +80,7 @@ union()
     {
         translate([0, 0, -1])
         {
-            cylinder(h3+1.1, d=d2);
+            cylinder(h3+1.01, d=d2);
         };
         translate([0, 0, h3])
         {
