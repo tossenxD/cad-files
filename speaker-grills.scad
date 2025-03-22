@@ -23,7 +23,7 @@ treble_x_offset = 0.5*cutout_treble + 100;
 hook_depth = 0.4*depth;
 hook_z_offset = -0.3*depth;
 cylinder_z_offset = -0.5*depth;
-support_offset = 12; // decrease print area requirements
+support_offset = 16; // decrease print area requirements
 
 /**/
 // bass and treble
