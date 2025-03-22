@@ -10,11 +10,12 @@ frame_y = 125; // mm
 frame_z = 5; // mm
 frame_thickness = 15; // mm
 
-indent_offset = 2.5; // mm
-indent_diameter = 10; // mm
+indent_offset = 1.5; // mm
+indent_diameter = 12; // mm
 indent_height = 5; // mm
 
 feet_height = 30; // mm
+slide_scale = 1.34; // percentage
 
 // MODEL
 
@@ -31,10 +32,10 @@ union() {
     }
     
     // feet
-    slide_off = frame_thickness * 0.5;
+    slide_off = (frame_thickness * (slide_scale - 1)) * 0.5;
     hull() {
         translate([x_off, y_off - slide_off, frame_z * 0.5]) {
-            cube([frame_thickness, frame_thickness * 2, 0.0001], true);
+            cube([frame_thickness, frame_thickness * slide_scale, 0.0001], true);
         }
         translate([x_off, y_off, (feet_height + frame_z) * 0.5]) {
             cube([frame_thickness, frame_thickness, feet_height], true);
@@ -42,7 +43,7 @@ union() {
     }
     hull() {
         translate([-x_off, y_off - slide_off, frame_z * 0.5]) {
-            cube([frame_thickness, frame_thickness * 2, 0.0001], true);
+            cube([frame_thickness, frame_thickness * slide_scale, 0.0001], true);
         }
         translate([-x_off, y_off, (feet_height + frame_z) * 0.5]) {
             cube([frame_thickness, frame_thickness, feet_height], true);
@@ -50,7 +51,7 @@ union() {
     }
     hull() {
         translate([x_off, - (y_off - slide_off), frame_z * 0.5]) {
-            cube([frame_thickness, frame_thickness * 2, 0.0001], true);
+            cube([frame_thickness, frame_thickness * slide_scale, 0.0001], true);
         }
         translate([x_off, -y_off, (feet_height + frame_z) * 0.5]) {
             cube([frame_thickness, frame_thickness, feet_height], true);
@@ -58,7 +59,7 @@ union() {
     }
     hull() {
         translate([-x_off, - (y_off - slide_off), frame_z * 0.5]) {
-            cube([frame_thickness, frame_thickness * 2, 0.0001], true);
+            cube([frame_thickness, frame_thickness * slide_scale, 0.0001], true);
         }
         translate([-x_off, -y_off, (feet_height + frame_z) * 0.5]) {
             cube([frame_thickness, frame_thickness, feet_height], true);
