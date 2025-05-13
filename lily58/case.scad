@@ -52,6 +52,10 @@ MAGNET_DIAMETER = 7;
 
 MAGNET_HEIGHT = 2;
 
+TOP_CONNECTOR_CORNER_OFFSET = 11;
+
+SIDE_CONNECTOR_CORNER_OFFSET = 14;
+
 
 ////
 // Calculated parameters
@@ -125,20 +129,24 @@ difference()
 // Bottom
 ////
 
+// magnet test
+/*
 difference() {
-linear_extrude(height = THICKNESS) {
-    offset(r = MAGNET_OFFSET_RADIUS + 2)
-        import("bottom/magnet_cutouts.svg", dpi = DPI);
-}
-translate([0, 0, (THICKNESS - MAGNET_HEIGHT - 0.2) / 2]) {
-linear_extrude(height = MAGNET_HEIGHT + 0.2) {
-    offset(r = MAGNET_OFFSET_RADIUS)
-        import("bottom/magnet_cutouts.svg", dpi = DPI);
-}
-}
+    linear_extrude(height = THICKNESS) {
+        offset(r = MAGNET_OFFSET_RADIUS + 2) {
+            import("bottom/magnet_cutouts.svg", dpi = DPI);
+        }
+    }
+    translate([0, 0, (THICKNESS - MAGNET_HEIGHT - 0.2) / 2]) {
+        linear_extrude(height = MAGNET_HEIGHT + 0.2) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_cutouts.svg", dpi = DPI);
+            }
+        } 
+    }
 }
 
-/*
+/**/
 difference() {
     union() {
         linear_extrude(height = THICKNESS) {
@@ -165,6 +173,20 @@ difference() {
     linear_extrude(height = SCREW_HEAD_HEIGHT) {
         offset(r = SCREW_HEAD_OFFSET_RADIUS) {
             import("bottom/screw_cutouts.svg", dpi = DPI);
+        }
+    }
+    translate([TOP_CONNECTOR_CORNER_OFFSET, THICKNESS, THICKNESS]) {
+        linear_extrude(height = WALL_HEIGHT) {
+            offset(delta = 0.1) {
+                import("bottom/connector_cutout.svg", dpi = DPI);
+            }
+        }
+    }
+    translate([- THICKNESS, - SIDE_CONNECTOR_CORNER_OFFSET, THICKNESS]) {
+        linear_extrude(height = WALL_HEIGHT) {
+            offset(delta = 0.1) {
+                import("bottom/connector_cutout.svg", dpi = DPI);
+            }
         }
     }
 }
