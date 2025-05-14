@@ -836,6 +836,46 @@
          transform="translate(-74.893602,-535.94371)"
          id="path210" />
     </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath58-7">
+      <path
+         d="M 0,765.354 H 907.087 V 0 H 0 Z"
+         transform="translate(-144.6255,-368.41591)"
+         id="path58-5" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath60-3">
+      <path
+         d="M 0,765.354 H 907.087 V 0 H 0 Z"
+         transform="translate(-144.6255,-260.70001)"
+         id="path60-5" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath58-7-7">
+      <path
+         d="M 0,765.354 H 907.087 V 0 H 0 Z"
+         transform="translate(-144.6255,-368.41591)"
+         id="path58-5-0" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath60-3-9">
+      <path
+         d="M 0,765.354 H 907.087 V 0 H 0 Z"
+         transform="translate(-144.6255,-260.70001)"
+         id="path60-5-3" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath58-7-1">
+      <path
+         d="M 0,765.354 H 907.087 V 0 H 0 Z"
+         transform="translate(-144.6255,-368.41591)"
+         id="path58-5-8" />
+    </clipPath>
   </defs>
   <sodipodi:namedview
      id="namedview1"
@@ -846,9 +886,9 @@
      inkscape:pageopacity="0.0"
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
-     inkscape:zoom="1.6470305"
-     inkscape:cx="219.18234"
-     inkscape:cy="551.59878"
+     inkscape:zoom="1.1646264"
+     inkscape:cx="207.79195"
+     inkscape:cy="552.5377"
      inkscape:window-width="2556"
      inkscape:window-height="1406"
      inkscape:window-x="0"
@@ -870,14 +910,34 @@
      inkscape:groupmode="layer"
      inkscape:label="bottom">
     <path
-       id="path57"
+       id="path57-2"
        d="m 0,0 c 0,1.837 -1.49,3.327 -3.328,3.327 -1.836,0 -3.326,-1.49 -3.326,-3.327 0,-1.838 1.49,-3.328 3.326,-3.328 C -1.49,-3.328 0,-1.838 0,0 Z"
        style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       transform="matrix(0.67897183,0,0,-0.67897183,188.15273,526.74652)"
-       clip-path="url(#clipPath58)" />
+       transform="matrix(0.67897183,0,0,-0.67897183,140.85737,559.59843)"
+       clip-path="url(#clipPath58-7)" />
+    <path
+       id="path57-2-9"
+       d="m 0,0 c 0,1.837 -1.49,3.327 -3.328,3.327 -1.836,0 -3.326,-1.49 -3.326,-3.327 0,-1.838 1.49,-3.328 3.326,-3.328 C -1.49,-3.328 0,-1.838 0,0 Z"
+       style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.67897183,0,0,-0.67897183,428.85736,631.09843)"
+       clip-path="url(#clipPath58-7-1)" />
+    <path
+       id="path59-9"
+       d="m 0,0 c 0,1.837 -1.49,3.327 -3.328,3.327 -1.836,0 -3.326,-1.49 -3.326,-3.327 0,-1.838 1.49,-3.329 3.326,-3.329 C -1.49,-3.329 0,-1.838 0,0 Z"
+       style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.67897183,0,0,-0.67897183,140.85737,703.21963)"
+       clip-path="url(#clipPath60-3)" />
+    <path
+       id="path57-2-0"
+       d="m 0,0 c 0,1.837 -1.49,3.327 -3.328,3.327 -1.836,0 -3.326,-1.49 -3.326,-3.327 0,-1.838 1.49,-3.328 3.326,-3.328 C -1.49,-3.328 0,-1.838 0,0 Z"
+       style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.67897183,0,0,-0.67897183,234.85737,559.59843)"
+       clip-path="url(#clipPath58-7-7)" />
+    <path
+       id="path59-9-6"
+       d="m 0,0 c 0,1.837 -1.49,3.327 -3.328,3.327 -1.836,0 -3.326,-1.49 -3.326,-3.327 0,-1.838 1.49,-3.329 3.326,-3.329 C -1.49,-3.329 0,-1.838 0,0 Z"
+       style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       transform="matrix(0.67897183,0,0,-0.67897183,234.85737,703.21963)"
+       clip-path="url(#clipPath60-3-9)" />
   </g>
-  <g
-     id="layer-MC2"
-     inkscape:groupmode="layer"
-     inkscape:label="top" />
 </svg>
