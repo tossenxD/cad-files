@@ -18,7 +18,7 @@
  * NOTE: Units are in mm and the design is the right-hand side.
  */
 
-//// 
+////
 // Input parameters
 ////
 
@@ -52,14 +52,19 @@ MAGNET_DIAMETER = 7;
 
 MAGNET_HEIGHT = 2;
 
-TOP_CONNECTOR_CORNER_OFFSET = 11;
+TOP_CONNECTOR_CORNER_OFFSET = 10.5;
 
-SIDE_CONNECTOR_CORNER_OFFSET = 14;
+SIDE_CONNECTOR_CORNER_OFFSET = 13.5;
 
-TOLERANCE = 0.1;
+TOLERANCE = 0.3;
 
 MAGNET_TOLERANCE = 0.2;
 
+TENT_MAGNET_EXTEND = 2;
+
+TENT_ANGLE = 40;
+
+LENGTH_TO_TENT_LEG_MIDDLE = 95.5; // can be measured from the svgs
 
 ////
 // Calculated parameters
@@ -71,7 +76,7 @@ SCREW_HEAD_OFFSET_RADIUS =
 MODULE_SCREW_HEAD_OFFSET_RADIUS =
     (MODULE_SCREW_HEAD_DIAMETER - MODULE_SCREW_SHANK_DIAMETER) / 2;
 
-WALL_HEIGHT = PLATE_BOTTOM_OFFSET + PLATE_THICKNESS;
+WALL_HEIGHT = PLATE_BOTTOM_OFFSET + PLATE_THICKNESS + THICKNESS;
 
 COVER_SPACER_HEIGHT = max(0, (
     (2 * SCREW_LENGTH) + TOLERANCE - TOP_COVER_PCB_OFFSET -
@@ -84,6 +89,12 @@ MAGNET_CUTOUT_Z = (THICKNESS - MAGNET_HEIGHT - MAGNET_TOLERANCE) / 2;
 COVER_SCREW_Z = THICKNESS - SCREW_HEAD_HEIGHT;
 
 COVER_MODULE_SCREW_Z = THICKNESS - MODULE_SCREW_HEAD_HEIGHT;
+
+TENT_HEIGHT = LENGTH_TO_TENT_LEG_MIDDLE * sin(TENT_ANGLE);
+
+TENT_LEGS_ANGLE = (180 - 90 - TENT_ANGLE) - 90; // = -TENT_ANGLE
+
+TENT_LEGS_SUPPORT_HEIGHT = max(TENT_HEIGHT * 0.2, THICKNESS * 3);
 
 ////
 // Cover
@@ -148,12 +159,12 @@ difference() {
             }
         }
         difference() {
-            linear_extrude(height = WALL_HEIGHT) {
+            linear_extrude(height = WALL_HEIGHT + TOLERANCE) {
                 offset(delta = THICKNESS + TOLERANCE) {
                     import("bottom/frame.svg", dpi = DPI);
                 }
             }
-            linear_extrude(height = WALL_HEIGHT) {
+            linear_extrude(height = WALL_HEIGHT + TOLERANCE) {
                 offset(delta = TOLERANCE) {
                     import("bottom/frame.svg", dpi = DPI);
                 }
@@ -187,7 +198,66 @@ difference() {
             offset(r = MAGNET_OFFSET_RADIUS) {
                 import("bottom/magnet_cutouts.svg", dpi = DPI);
             }
-        } 
+        }
+    }
+    translate([0, 0, MAGNET_CUTOUT_Z]) {
+        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_guide_cutout.svg", dpi = DPI);
+            }
+        }
+    }
+}
+/**/
+
+////
+// Tentint Legs
+////
+
+/*
+difference() {
+    union() {
+        rotate([0, TENT_LEGS_ANGLE, 0]) {
+            linear_extrude(height = TENT_HEIGHT) {
+                import("bottom/tent_legs.svg", dpi = DPI, center = true);
+            }
+            linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
+                hull() {
+                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+        hull() {
+            rotate([0, TENT_LEGS_ANGLE, 0]) {
+                linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
+                    hull() {
+                        import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                    }
+                }
+            }
+            linear_extrude(height = THICKNESS) {
+                hull() {
+                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+        linear_extrude(height = THICKNESS) {
+            offset(r = MAGNET_OFFSET_RADIUS + TENT_MAGNET_EXTEND) {
+                hull() {
+                    import("bottom/magnet_cutouts.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+    }
+    translate([0, 0, MAGNET_CUTOUT_Z]) {
+        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_cutouts.svg", dpi = DPI, center = true);
+            }
+        }
+    }
+    translate([-50, -50, -100]) {
+        cube([100, 100, 100]);
     }
 }
 /**/
