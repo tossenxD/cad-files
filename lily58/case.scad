@@ -64,7 +64,9 @@ TENT_MAGNET_EXTEND = 2;
 
 TENT_ANGLE = 40;
 
-LENGTH_TO_TENT_LEG_MIDDLE = 95.5; // can be measured from the svgs
+WALL_HEIGHT_FROM_PLATE = 7.2;
+
+TENT_LEG_FEET_HEIGHT = 1.75;
 
 ////
 // Calculated parameters
@@ -76,7 +78,9 @@ SCREW_HEAD_OFFSET_RADIUS =
 MODULE_SCREW_HEAD_OFFSET_RADIUS =
     (MODULE_SCREW_HEAD_DIAMETER - MODULE_SCREW_SHANK_DIAMETER) / 2;
 
-WALL_HEIGHT = PLATE_BOTTOM_OFFSET + PLATE_THICKNESS + THICKNESS;
+WALL_HEIGHT = PLATE_BOTTOM_OFFSET + PLATE_THICKNESS + THICKNESS + WALL_HEIGHT_FROM_PLATE;
+
+CONNECTOR_CUTOUT_HEIGHT = PLATE_BOTTOM_OFFSET + PLATE_THICKNESS + THICKNESS;
 
 COVER_SPACER_HEIGHT = max(0, (
     (2 * SCREW_LENGTH) + TOLERANCE - TOP_COVER_PCB_OFFSET -
@@ -90,11 +94,21 @@ COVER_SCREW_Z = THICKNESS - SCREW_HEAD_HEIGHT;
 
 COVER_MODULE_SCREW_Z = THICKNESS - MODULE_SCREW_HEAD_HEIGHT;
 
-TENT_HEIGHT = LENGTH_TO_TENT_LEG_MIDDLE * sin(TENT_ANGLE);
+TENT_MAGNET_OFFSET_RADIUS = MAGNET_OFFSET_RADIUS + TENT_MAGNET_EXTEND;
+
+LENGTH_TO_TENT_LEG_MIDDLE = 95.5; // approximated from the svgs
+
+SIZE_BETWEEN_LEGS_AND_MAGNETS = 8.1; // approximated from the svgs
+
+TENT_LEGS_TRANSLATION_DISTANCE = SIZE_BETWEEN_LEGS_AND_MAGNETS + TENT_MAGNET_OFFSET_RADIUS;
+
+TENT_HEIGHT = ((LENGTH_TO_TENT_LEG_MIDDLE + TENT_LEGS_TRANSLATION_DISTANCE) * sin(TENT_ANGLE))
+              - TENT_LEG_FEET_HEIGHT;
 
 TENT_LEGS_ANGLE = (180 - 90 - TENT_ANGLE) - 90; // = -TENT_ANGLE
 
-TENT_LEGS_SUPPORT_HEIGHT = max(TENT_HEIGHT * 0.2, THICKNESS * 3);
+TENT_LEGS_SUPPORT_HEIGHT = max(TENT_HEIGHT * 0.175, THICKNESS * 3);
+
 
 ////
 // Cover
@@ -180,14 +194,14 @@ difference() {
         }
     }
     translate([TOP_CONNECTOR_CORNER_OFFSET, THICKNESS, THICKNESS]) {
-        linear_extrude(height = WALL_HEIGHT) {
+        linear_extrude(height = CONNECTOR_CUTOUT_HEIGHT) {
             offset(delta = TOLERANCE) {
                 import("bottom/connector_cutout.svg", dpi = DPI);
             }
         }
     }
     translate([- THICKNESS, - SIDE_CONNECTOR_CORNER_OFFSET, THICKNESS]) {
-        linear_extrude(height = WALL_HEIGHT) {
+        linear_extrude(height = CONNECTOR_CUTOUT_HEIGHT) {
             offset(delta = TOLERANCE) {
                 import("bottom/connector_cutout.svg", dpi = DPI);
             }
@@ -217,32 +231,34 @@ difference() {
 /*
 difference() {
     union() {
-        rotate([0, TENT_LEGS_ANGLE, 0]) {
-            linear_extrude(height = TENT_HEIGHT) {
-                import("bottom/tent_legs.svg", dpi = DPI, center = true);
-            }
-            linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
-                hull() {
+        translate([TENT_LEGS_TRANSLATION_DISTANCE, 0, 0]) {
+            rotate([0, TENT_LEGS_ANGLE, 0]) {
+                linear_extrude(height = TENT_HEIGHT) {
                     import("bottom/tent_legs.svg", dpi = DPI, center = true);
                 }
-            }
-        }
-        hull() {
-            rotate([0, TENT_LEGS_ANGLE, 0]) {
                 linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
                     hull() {
                         import("bottom/tent_legs.svg", dpi = DPI, center = true);
                     }
                 }
             }
-            linear_extrude(height = THICKNESS) {
-                hull() {
-                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
+            hull() {
+                rotate([0, TENT_LEGS_ANGLE, 0]) {
+                    linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
+                        hull() {
+                            import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                        }
+                    }
+                }
+                linear_extrude(height = THICKNESS) {
+                    hull() {
+                        import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                    }
                 }
             }
         }
         linear_extrude(height = THICKNESS) {
-            offset(r = MAGNET_OFFSET_RADIUS + TENT_MAGNET_EXTEND) {
+            offset(r = TENT_MAGNET_OFFSET_RADIUS) {
                 hull() {
                     import("bottom/magnet_cutouts.svg", dpi = DPI, center = true);
                 }
