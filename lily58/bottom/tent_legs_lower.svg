@@ -7,7 +7,7 @@
    width="1209.4493"
    height="1020.472"
    viewBox="0 0 1209.4493 1020.472"
-   sodipodi:docname="tent_legs.svg"
+   sodipodi:docname="tent_legs_lower.svg"
    inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -919,13 +919,13 @@
        id="path129-6"
        d="m 189.184,598.705 h -39.686 v 39.685 h 39.686 z"
        style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       transform="matrix(0.95217415,0,0,-0.95217415,26.781814,1046.0378)"
+       transform="matrix(0.95217415,0,0,-0.95217415,26.781814,1121.6284)"
        clip-path="url(#clipPath130-75)" />
     <path
        id="path129-5"
        d="m 189.184,598.705 h -39.686 v 39.685 h 39.686 z"
        style="fill:none;stroke:#000000 icc-color(sRGB-IEC61966-2, 0.1, 0, 0, 0);stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-       transform="matrix(0.95217415,0,0,-0.95217415,26.781814,1384.7856)"
+       transform="matrix(0.95217415,0,0,-0.95217415,26.781814,1309.195)"
        clip-path="url(#clipPath130-7)" />
   </g>
 </svg>

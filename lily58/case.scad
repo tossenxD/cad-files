@@ -31,8 +31,8 @@
 // Objects - toggle which case parts to draw!
 ////
 
-bottom();
-//tenting_legs();
+//bottom();
+tenting_legs();
 //cover();
 //pcb_cover_screw_spacers();
 
@@ -81,16 +81,25 @@ SIDE_CONNECTOR_CORNER_OFFSET = 13.5;
 
 TENT_MAGNET_EXTEND = 2;
 
-TENT_ANGLE = 30;
+TENT_ANGLE = 40;
 
-TENT_LEG_FEET_HEIGHT = 1.75;
+TILT_ANGLE = -10;
+
+TENT_LEG_FEET_HEIGHT = 2;
 
 DPI = 96; // SVG encoding
 
-LENGTH_TO_TENT_LEG_MIDDLE = 95.5; // approximated from the SVGs
+DISTANCE_TO_MAGNET_CLUSTER_MIDDLE = 95.5; // approximated from the SVGs
 
-SIZE_BETWEEN_LEGS_AND_MAGNETS = 8.6; // approximated from the SVGs
+SIZE_BETWEEN_LEGS_AND_MAGNETS = 18.6; // approximated from the SVGs
 
+DISTANCE_TO_MAGNET_GUIDE = 32.7; // approximated from the SVGs
+
+DISTANCE_FROM_MAGNET_GUIDE_TO_NEGATIVE_TILT_POINT = 44.4; // approximated from the SVGs
+
+DISTANCE_FROM_MAGNET_GUIDE_TO_POSITIVE_TILT_POINT = 33.5; // approximated from the SVGs
+
+LEG_THICKNESS = 10.2; // approximated from the SVGs
 
 ////
 // Calculated parameters - automatically adjusted based on the input parameters!
@@ -120,12 +129,29 @@ TENT_MAGNET_OFFSET_RADIUS = MAGNET_OFFSET_RADIUS + TENT_MAGNET_EXTEND;
 
 TENT_LEGS_TRANSLATION_DISTANCE = SIZE_BETWEEN_LEGS_AND_MAGNETS + TENT_MAGNET_OFFSET_RADIUS;
 
-TENT_HEIGHT = ((LENGTH_TO_TENT_LEG_MIDDLE + THICKNESS + TENT_LEGS_TRANSLATION_DISTANCE)
-               * sin(TENT_ANGLE)) - TENT_LEG_FEET_HEIGHT;
+LEG_THICKNESS_FROM_MIDDLE_AFTER_TENT = (LEG_THICKNESS * 0.5) * cos(TENT_ANGLE);
+
+TENT_HEIGHT_UPPER = ((DISTANCE_TO_MAGNET_CLUSTER_MIDDLE + THICKNESS + TOLERANCE +
+                      TENT_LEGS_TRANSLATION_DISTANCE - (LEG_THICKNESS * 0.5))
+                      * sin(TENT_ANGLE));
+               
+TENT_HEIGHT_LOWER = ((DISTANCE_TO_MAGNET_GUIDE + THICKNESS + TOLERANCE - (LEG_THICKNESS * 0.5)
+                     ) * sin(TENT_ANGLE));
 
 TENT_LEGS_ANGLE = (180 - 90 - TENT_ANGLE) - 90; // = -TENT_ANGLE
 
-TENT_LEGS_SUPPORT_HEIGHT = max(TENT_HEIGHT * 0.175, THICKNESS * 3);
+TENT_LEGS_SUPPORT_HEIGHT = max(min(TENT_HEIGHT_LOWER * 0.5, THICKNESS * 3), THICKNESS);
+
+DISTANCE_FROM_MAGNET_GUIDE_TO_CLUSTER_MIDDLE =
+                    DISTANCE_TO_MAGNET_CLUSTER_MIDDLE - DISTANCE_TO_MAGNET_GUIDE;
+                    
+DISTANCE_FROM_MAGNET_GUIDE_TO_UPPER_LEGS_MIDDLE =
+        DISTANCE_FROM_MAGNET_GUIDE_TO_CLUSTER_MIDDLE + TENT_LEGS_TRANSLATION_DISTANCE;
+                    
+DISTANCE_FROM_MAGNET_GUIDE_TO_TILT_POINT =
+    TILT_ANGLE <= 0 ?
+    DISTANCE_FROM_MAGNET_GUIDE_TO_NEGATIVE_TILT_POINT  + THICKNESS + TOLERANCE :
+    -DISTANCE_FROM_MAGNET_GUIDE_TO_POSITIVE_TILT_POINT - THICKNESS - TOLERANCE;
 
 
 ////
@@ -250,42 +276,53 @@ module bottom() {
 ////
 
 module tenting_legs() {
-    difference() {
-        union() {
-            translate([TENT_LEGS_TRANSLATION_DISTANCE, 0, 0]) {
-                rotate([0, TENT_LEGS_ANGLE, 0]) {
-                    linear_extrude(height = TENT_HEIGHT) {
-                        import("bottom/tent_legs.svg", dpi = DPI, center = true);
-                    }
-                    linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
-                        hull() {
-                            import("bottom/tent_legs.svg", dpi = DPI, center = true);
-                        }
-                    }
-                }
+    //----------------------------------------------------------
+
+    module UpperLegs() {
+        // Draw legs
+        rotate([0, TENT_LEGS_ANGLE, 0]) {
+            linear_extrude(height = TENT_HEIGHT_UPPER + 100) {
+                import("bottom/tent_legs.svg", dpi = DPI, center = true);
+            }
+            linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
                 hull() {
-                    rotate([0, TENT_LEGS_ANGLE, 0]) {
-                        linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
-                            hull() {
-                                import("bottom/tent_legs.svg", dpi = DPI, center = true);
-                            }
-                        }
-                    }
-                    linear_extrude(height = THICKNESS) {
-                        hull() {
-                            import("bottom/tent_legs.svg", dpi = DPI, center = true);
-                        }
+                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+        // Angle between legs and bottom
+        hull() {
+            rotate([0, TENT_LEGS_ANGLE, 0]) {
+                linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
+                    hull() {
+                        import("bottom/tent_legs.svg", dpi = DPI, center = true);
                     }
                 }
             }
             linear_extrude(height = THICKNESS) {
-                offset(r = TENT_MAGNET_OFFSET_RADIUS) {
-                    hull() {
-                        import("bottom/magnet_cutouts.svg", dpi = DPI, center = true);
-                    }
+                hull() {
+                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
                 }
             }
         }
+        
+    };
+
+    //----------------------------------------------------------
+
+    module UpperMagnetPlate() {        
+        linear_extrude(height = THICKNESS) {
+            offset(r = TENT_MAGNET_OFFSET_RADIUS) {
+                hull() {
+                    import("bottom/magnet_cutouts.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+    };
+
+    //----------------------------------------------------------
+
+    module UpperMagnetCutouts() {
         translate([0, 0, MAGNET_CUTOUT_Z]) {
             linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
                 offset(r = MAGNET_OFFSET_RADIUS) {
@@ -293,8 +330,139 @@ module tenting_legs() {
                 }
             }
         }
+    };
+
+    //----------------------------------------------------------
+
+    module Upper() {
+        difference() {
+            union() {
+                translate([TENT_LEGS_TRANSLATION_DISTANCE, 0, 0]) {
+                    UpperLegs();
+                }
+                if (SIZE_BETWEEN_LEGS_AND_MAGNETS > 10)
+                {
+                    translate([SIZE_BETWEEN_LEGS_AND_MAGNETS * 0.3, 0, 0]) {
+                        UpperMagnetPlate();
+                    }
+                }
+                UpperMagnetPlate();
+            }
+            UpperMagnetCutouts();
+            translate([-500, -500, -1000]) {
+                cube([1000, 1000, 1000]);
+            }
+        }
+    };
+    
+    //----------------------------------------------------------
+
+    module LowerLegs() {
+        // Draw legs
+        rotate([0, TENT_LEGS_ANGLE, 0]) {
+            linear_extrude(height = TENT_HEIGHT_LOWER + 100) {
+                import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+            }
+            linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
+                hull() {
+                    import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+        // Angle between legs and bottom
+        hull() {
+            rotate([0, TENT_LEGS_ANGLE, 0]) {
+                linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
+                    hull() {
+                        import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                    }
+                }
+            }
+            linear_extrude(height = THICKNESS) {
+                hull() {
+                    import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+        
+    };
+
+    //----------------------------------------------------------
+
+    module LowerMagnetPlate() {        
+        linear_extrude(height = THICKNESS) {
+            offset(r = TENT_MAGNET_OFFSET_RADIUS) {
+                hull() {
+                    import("bottom/magnet_guide_cutout.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+    };
+
+    //----------------------------------------------------------
+
+    module LowerMagnetCutout() {
+        translate([0, 0, MAGNET_CUTOUT_Z]) {
+            linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+                offset(r = MAGNET_OFFSET_RADIUS) {
+                    import("bottom/magnet_guide_cutout.svg", dpi = DPI, center = true);
+                }
+            }
+        }
+    };
+
+    //----------------------------------------------------------
+    
+    module Lower() {
+        difference() {
+            union() {
+                LowerLegs();
+                LowerMagnetPlate();
+            }
+            LowerMagnetCutout();
+            translate([-500, -500, -1000]) {
+                cube([1000, 1000, 1000]);
+            }
+        }
+    };
+    
+    //----------------------------------------------------------
+
+    module Middle() {
+        MIDDLE_HEIGHT = TENT_LEGS_SUPPORT_HEIGHT * 0.7;
+        MIDDLE_LENGTH = DISTANCE_FROM_MAGNET_GUIDE_TO_UPPER_LEGS_MIDDLE - MIDDLE_HEIGHT;
+        difference(){
+            resize([0, 0, MIDDLE_HEIGHT]) {
+                hull() {
+                    LowerMagnetPlate();
+                    translate([MIDDLE_LENGTH, 0, 0]) {
+                        LowerMagnetPlate();
+                    };
+                };
+            };
+            LowerMagnetCutout();
+        }
+    }
+
+    //----------------------------------------------------------
+
+    // TODO the tilt is awfully complicated - currently off by +2mm height for tent 40 and tilt -10
+    difference() {
+        rotate([TILT_ANGLE, 0, 0]) {
+            translate([0, -DISTANCE_FROM_MAGNET_GUIDE_TO_TILT_POINT, TENT_HEIGHT_LOWER - TENT_LEG_FEET_HEIGHT]) {
+                rotate([0, 180 - TENT_LEGS_ANGLE, 0]) {
+                translate([LEG_THICKNESS - LEG_THICKNESS_FROM_MIDDLE_AFTER_TENT, 0, 0]) {
+                    translate([DISTANCE_FROM_MAGNET_GUIDE_TO_CLUSTER_MIDDLE, 0, 0]) { Upper(); };
+                    Lower();
+                    Middle();
+                }
+                }
+            }
+        }
         translate([-500, -500, -1000]) {
             cube([1000, 1000, 1000]);
         }
     }
+
+    //----------------------------------------------------------
 }
