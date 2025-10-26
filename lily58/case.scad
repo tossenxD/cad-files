@@ -32,9 +32,10 @@
 ////
 
 //bottom();
-tenting_legs();
+//tenting_legs();
 //cover();
 //pcb_cover_screw_spacers();
+tented_and_tilted_palm_rest();
 
 
 ////
@@ -81,7 +82,7 @@ SIDE_CONNECTOR_CORNER_OFFSET = 13.5;
 
 TENT_MAGNET_EXTEND = 2;
 
-TENT_ANGLE = 40;
+TENT_ANGLE = 35;
 
 TILT_ANGLE = -10;
 
@@ -210,6 +211,23 @@ module pcb_cover_screw_spacers() {
 // Bottom - the main case!
 ////
 
+module magnet_cutouts() {
+    translate([0, 0, MAGNET_CUTOUT_Z]) {
+        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_cutouts.svg", dpi = DPI);
+            }
+        }
+    }
+    translate([0, 0, MAGNET_CUTOUT_Z]) {
+        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_guide_cutout.svg", dpi = DPI);
+            }
+        }
+    }
+}
+
 module bottom() {
     difference() {
         union() {
@@ -253,20 +271,7 @@ module bottom() {
                 }
             }
         }
-        translate([0, 0, MAGNET_CUTOUT_Z]) {
-            linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
-                offset(r = MAGNET_OFFSET_RADIUS) {
-                    import("bottom/magnet_cutouts.svg", dpi = DPI);
-                }
-            }
-        }
-        translate([0, 0, MAGNET_CUTOUT_Z]) {
-            linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
-                offset(r = MAGNET_OFFSET_RADIUS) {
-                    import("bottom/magnet_guide_cutout.svg", dpi = DPI);
-                }
-            }
-        }
+        magnet_cutouts();
     }
 }
 
@@ -464,5 +469,239 @@ module tenting_legs() {
         }
     }
 
+    //----------------------------------------------------------
+}
+
+
+////
+// Palm rest -- flexible, overengineered, and hard to print!
+////
+
+module tented_and_tilted_palm_rest()
+{
+    //----------------------------------------------------------
+
+    REST_LENGTH = 100; // mm
+    REST_SLOPE = 18; // mm
+    REST_WIDTH = 57; // mm
+    REST_HEIGHT = 10.250; // mm
+    REST_OFFSET = THICKNESS + TOLERANCE;
+    DISTANCE_TO_Y = 86 + REST_WIDTH + REST_OFFSET + THICKNESS - TOLERANCE; // mm
+    DISTANCE_TO_X = 270 + 84 - (171 + REST_HEIGHT) + THICKNESS - TOLERANCE; // mm
+    TENT_ANGLE_PALM = TENT_ANGLE * 0.75; // deg
+    BOTTOM_HEIGHT = WALL_HEIGHT + TOLERANCE + THICKNESS; // mm
+    
+    //----------------------------------------------------------
+
+    module tilt(T = TILT_ANGLE) {
+        translate([0, DISTANCE_TO_X, 0])
+        {
+            rotate([T, 0, 0])
+            {
+                translate([0, -DISTANCE_TO_X, 0])
+                {
+                    children();
+                }
+            }
+        }
+    }
+
+    //----------------------------------------------------------
+
+    module tent(T) {
+        translate([DISTANCE_TO_Y, 0, 0])
+        {
+            rotate([0, T, 0])
+            {
+                translate([-DISTANCE_TO_Y, 0, 0])
+                {
+                    children();
+                }
+            }
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module solid_bottom() {
+        linear_extrude(height = BOTTOM_HEIGHT) {
+            offset(delta = THICKNESS + TOLERANCE) {
+                import("bottom/frame.svg", dpi = DPI, center = false);
+            }
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module rest() {
+        difference() {
+            hull() {
+                linear_extrude(height = BOTTOM_HEIGHT) {
+                    offset(delta = THICKNESS)
+                    {
+                        import("bottom/frame.svg", dpi = DPI, center = false);
+                    }
+                }
+                linear_extrude(height = BOTTOM_HEIGHT - REST_SLOPE) {
+                    offset(r = REST_OFFSET) {
+                        translate([0, -REST_LENGTH, 0]) {
+                            import("rest/bot.svg", dpi = DPI, center = false);
+                        }
+                    }
+                }
+            }
+            translate([0, 0, THICKNESS]) {
+                solid_bottom();
+            }
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module rest_palm() {
+        difference() {
+            rest();
+            solid_bottom();
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module rest_bottom() {
+        difference() {
+            rest();
+            rest_palm();
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module adjusted_rest_palm() {
+        difference()
+        {
+            tent(TENT_ANGLE_PALM) { tilt(){ rest_palm(); } }
+            tent(TENT_ANGLE)
+            {
+                tilt()
+                {
+                    translate([0, 0, THICKNESS]) {
+                        solid_bottom();
+                    }
+                }
+            }
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module adjusted_rest_bottom() {
+        tent(TENT_ANGLE)
+        {
+            tilt()
+            {
+                difference()
+                {
+                    tilt(-TILT_ANGLE)
+                    {
+                        difference()
+                        {
+                            hull() {
+                                tilt(TILT_ANGLE){ rest_bottom(); }
+                                rest_bottom();
+                            }
+                            tilt() { rest_palm(); }
+                            rest_palm();
+                        }
+                    }
+                    translate([0, 0, MAGNET_CUTOUT_Z])
+                    {
+                        magnet_cutouts();
+                    }
+                    translate([0, 0, MAGNET_CUTOUT_Z*2])
+                    {
+                        magnet_cutouts();
+                    }
+                }
+            }
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module adjusted_legs() {
+        module adjust_leg(T) {
+            hull() {
+                tent(T) { tilt() { children(); } }
+                children();
+            }
+        }
+
+        adjust_leg(TENT_ANGLE_PALM)
+        {
+            linear_extrude(height = THICKNESS) {
+                offset(r = REST_OFFSET) {
+                    translate([0, -REST_LENGTH, 0]) {
+                        import("rest/bot.svg", dpi = DPI, center = false);
+                    }
+                }
+            }
+        }
+
+        for (name = ["rest/leg0.svg", "rest/leg1.svg", "rest/leg2.svg", "rest/leg3.svg"])
+        {
+            adjust_leg(TENT_ANGLE)
+            {
+                linear_extrude(height = THICKNESS) {
+                    offset(r = REST_OFFSET) {
+                        import(name, dpi = DPI, center = false);
+                    }
+                }
+            }
+        }
+    }
+    
+    //----------------------------------------------------------
+
+    module rest_support() {
+        hull()
+        {
+            tent(TENT_ANGLE_PALM)
+            {
+                tilt()
+                {
+                    linear_extrude(height = THICKNESS) {
+                        offset(r = REST_OFFSET) {
+                            translate([0, -REST_LENGTH, 0]) {
+                                import("rest/bot.svg", dpi = DPI, center = false);
+                            }
+                        }
+                    }
+                }
+            }
+            tent(TENT_ANGLE)
+            {
+                 linear_extrude(height = THICKNESS) {
+                    offset(delta = THICKNESS)
+                     {
+                        import("bottom/frame.svg", dpi = DPI, center = false);
+                    }
+                }
+            }
+        }
+    }
+
+    //----------------------------------------------------------
+
+    adjusted_rest_palm();
+    adjusted_rest_bottom();
+    adjusted_legs();
+    rest_support();
+
+    // Enable to inspect case on top of the rest.
+    if (false)
+    {
+        tent(TENT_ANGLE) { tilt() { translate([0, 0, THICKNESS]) { bottom(); } } }
+    }
+    
     //----------------------------------------------------------
 }
