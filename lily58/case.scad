@@ -488,7 +488,7 @@ module tented_and_tilted_palm_rest()
     REST_OFFSET = THICKNESS + TOLERANCE;
     DISTANCE_TO_Y = 86 + REST_WIDTH + REST_OFFSET + THICKNESS - TOLERANCE; // mm
     DISTANCE_TO_X = 270 + 84 - (171 + REST_HEIGHT) + THICKNESS - TOLERANCE; // mm
-    TENT_ANGLE_PALM = TENT_ANGLE * 0.75; // deg
+    TENT_ANGLE_PALM = TENT_ANGLE * 1; // deg
     BOTTOM_HEIGHT = WALL_HEIGHT + TOLERANCE + THICKNESS; // mm
     
     //----------------------------------------------------------
@@ -558,47 +558,48 @@ module tented_and_tilted_palm_rest()
     
     //----------------------------------------------------------
 
+    module rest_ledge() {
+        LEDGE_OFFSET = 0.5;
+        REST_LEDGE_OFFSET_DIFF = REST_OFFSET - LEDGE_OFFSET;
+        MAGIC = 2.35;
+        LEDGE_HEIGHT = BOTTOM_HEIGHT - (0.5 * REST_SLOPE);
+        LEDGE_WIDTH = REST_WIDTH * 0.7;
+
+        module extrude_ledge(name, H, O) {
+            linear_extrude(height = H) {
+                offset(r = O) {
+                    import(name, dpi = DPI, center = false);
+                }
+            }
+        }
+
+        hull() {
+            translate([REST_LEDGE_OFFSET_DIFF + MAGIC, -REST_HEIGHT, 0]) {
+                extrude_ledge("rest/botledge.svg", BOTTOM_HEIGHT, LEDGE_OFFSET);
+            }
+            translate([REST_LEDGE_OFFSET_DIFF, -REST_LENGTH-REST_LEDGE_OFFSET_DIFF, 0]) {
+                extrude_ledge("rest/botledge.svg", LEDGE_HEIGHT, LEDGE_OFFSET);
+            }
+            translate([0, -REST_LENGTH, 0]) {
+                extrude_ledge("rest/botledge.svg", THICKNESS, REST_OFFSET);
+            }
+            translate([LEDGE_WIDTH, -REST_LENGTH, 0]) {
+                extrude_ledge("rest/botleg.svg", THICKNESS, REST_OFFSET);
+            }
+        }
+    }
+
+    //----------------------------------------------------------
+
     module rest_palm() {
-        module palm() {
+        union()
+        {
             difference() {
                 rest();
                 solid_bottom();
             }
+            rest_ledge();
         }
-        
-        module ledge() {
-            LEDGE_OFFSET = 0.5;
-            REST_LEDGE_OFFSET_DIFF = REST_OFFSET - LEDGE_OFFSET;
-
-            module extrude_ledge(name, H, O) {
-                linear_extrude(height = H) {
-                    offset(r = O) {
-                        import(name, dpi = DPI, center = false);
-                    }
-                }
-            }
-            
-            X = BOTTOM_HEIGHT - (0.5 * REST_SLOPE);
-            Y = REST_WIDTH * 0.7;
-
-            hull() {
-                translate([REST_LEDGE_OFFSET_DIFF + 2.2, -REST_HEIGHT, 0]) {
-                    extrude_ledge("rest/botledge.svg", BOTTOM_HEIGHT, LEDGE_OFFSET);
-                }
-                translate([REST_OFFSET, -REST_LENGTH - REST_LEDGE_OFFSET_DIFF, 0]) {
-                    extrude_ledge("rest/botledge.svg", X, LEDGE_OFFSET);
-                }
-                translate([REST_OFFSET, -REST_LENGTH, 0]) {
-                    extrude_ledge("rest/botledge.svg", THICKNESS, REST_OFFSET);
-                }
-                translate([Y , -REST_LENGTH, 0]) {
-                    extrude_ledge("rest/botleg.svg", THICKNESS, REST_OFFSET);
-                }
-            }
-        }
-
-        palm();
-        ledge();
     }
     
     //----------------------------------------------------------
@@ -613,8 +614,6 @@ module tented_and_tilted_palm_rest()
     //----------------------------------------------------------
 
     module adjusted_rest_palm() {
-        if (true)
-        {
         difference()
         {
             tent(TENT_ANGLE_PALM) { tilt(){ rest_palm(); } }
@@ -628,39 +627,8 @@ module tented_and_tilted_palm_rest()
                 }
             }
         }
-        }
-
-        else if (true)
-        {
-        difference()
-        {
-            intersection()
-            {
-                tent(TENT_ANGLE_PALM) { tilt(){ rest_palm(); } }
-                hull()
-                {
-                    tent(TENT_ANGLE) { tilt(){ rest_palm(); } }
-                    rest_palm();
-                }
-            }
-            tent(TENT_ANGLE)
-            {
-                tilt()
-                {
-                    translate([0, 0, THICKNESS]) {
-                        solid_bottom();
-                    }
-                }
-            }
-        }
-        }
-
-        else
-        {
-            tent(TENT_ANGLE) { tilt(){ rest_palm(); } }
-        }
     }
-    
+
     //----------------------------------------------------------
 
     module adjusted_rest_bottom() {
@@ -724,7 +692,7 @@ module tented_and_tilted_palm_rest()
             translate([0, -REST_LENGTH, 0]) { extrude_leg("rest/botleg.svg"); }
         }
 
-        adjust_leg_out(TENT_ANGLE_PALM, 2.5) {
+        adjust_leg_out(TENT_ANGLE_PALM, 3) {
             translate([REST_WIDTH - LEG_THICKNESS, -REST_LENGTH, 0]) {
                 extrude_leg("rest/botleg.svg");
             }
@@ -742,50 +710,33 @@ module tented_and_tilted_palm_rest()
     module rest_support() {
         difference()
         {
-        hull()
-        {
-            tent(TENT_ANGLE_PALM)
+            hull()
             {
-                tilt()
+                tent(TENT_ANGLE_PALM)
                 {
-                    linear_extrude(height = THICKNESS) {
-                        offset(r = REST_OFFSET) {
-                            translate([0, -REST_LENGTH, 0]) {
-                                import("rest/bot.svg", dpi = DPI, center = false);
+                    tilt()
+                    {
+                        linear_extrude(height = THICKNESS) {
+                            offset(r = REST_OFFSET) {
+                                translate([0, - REST_LENGTH, 0]) {
+                                    import("rest/bot.svg", dpi = DPI, center = false);
+                                }
                             }
                         }
                     }
                 }
+                adjusted_rest_bottom();
             }
-            //tent(TENT_ANGLE) { tilt() { rest_bottom(); }}
-            //adjusted_rest_bottom();
-            
-            if (true)
-            {
-            tent(TENT_ANGLE)
-            {
-                 linear_extrude(height = THICKNESS) {
-                    offset(delta = THICKNESS)
-                     {
-                        import("bottom/frame.svg", dpi = DPI, center = false);
-                    }
-                }
-            }
-            }
-            
-        }
-        tent(TENT_ANGLE) { tilt() { solid_bottom(); } }
+            tent(TENT_ANGLE) { tilt() { solid_bottom(); } }
         }
     }
 
     //----------------------------------------------------------
 
-    /**/
     adjusted_rest_palm();
     adjusted_rest_bottom();
     adjusted_legs();
     rest_support();
-    /**/
 
     // Enable to inspect case on top of the rest.
     if (false)
