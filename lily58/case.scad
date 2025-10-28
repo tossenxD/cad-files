@@ -482,7 +482,7 @@ module tented_and_tilted_palm_rest()
     //----------------------------------------------------------
 
     REST_LENGTH = 100; // mm
-    REST_SLOPE = 18; // mm
+    REST_SLOPE = 15; // mm
     REST_WIDTH = 57; // mm
     REST_HEIGHT = 10.250; // mm
     REST_OFFSET = THICKNESS + TOLERANCE;
@@ -562,8 +562,8 @@ module tented_and_tilted_palm_rest()
         LEDGE_OFFSET = 0.5;
         REST_LEDGE_OFFSET_DIFF = REST_OFFSET - LEDGE_OFFSET;
         MAGIC = 2.35;
-        LEDGE_HEIGHT = BOTTOM_HEIGHT - (0.5 * REST_SLOPE);
-        LEDGE_WIDTH = REST_WIDTH * 0.7;
+        LEDGE_HEIGHT = BOTTOM_HEIGHT - (0.6 * REST_SLOPE);
+        LEDGE_WIDTH = REST_WIDTH * 0.75;
 
         module extrude_ledge(name, H, O) {
             linear_extrude(height = H) {
@@ -692,7 +692,7 @@ module tented_and_tilted_palm_rest()
             translate([0, -REST_LENGTH, 0]) { extrude_leg("rest/botleg.svg"); }
         }
 
-        adjust_leg_out(TENT_ANGLE_PALM, 3) {
+        adjust_leg_out(TENT_ANGLE_PALM, 3.5) {
             translate([REST_WIDTH - LEG_THICKNESS, -REST_LENGTH, 0]) {
                 extrude_leg("rest/botleg.svg");
             }
