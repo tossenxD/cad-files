@@ -7,7 +7,8 @@
  * transport, at a desk, from bed), allows for adjustable tenting, has space
  * for sound-dampening material, and remaining firm in all scenario.
  *
- * I believe the best approach to the above criteria is minimalism and embedding magnets.
+ * I believe the best approach to the above criteria is a minimal case with
+ * embedded magnets.
  *
  * Hence, I designed my own case from the ground up with this in mind. The design is
  * parameterized such that it is easily adaptable to different design philosophy
@@ -15,11 +16,11 @@
  * dimensions), and even completely different keyboards (by replacing the SVG files)!
  *
  * Furthermore, besides robustness during transportation, the embedded magnets provides
- * a solid base creating accessory modules (e.g. tenting legs).
+ * a solid base creating accessory modules (e.g. tenting legs, palm rests, etc.).
  *
- * This file is divided in clearly marked sections, where only the first two are
- * be relevant for most users. The reference model (`reference.svg`) is taken from
- * the original design: https://github.com/kata0510/Lily58
+ * This file is divided in clearly marked sections, where only the ones marked
+ * "input parameters" are relevant for most users. The reference model `reference.svg`
+ * is taken from the original design: https://github.com/kata0510/Lily58
  *
  * Happy printing! :)
  *
@@ -31,11 +32,20 @@
 // Objects - toggle which case parts to draw!
 ////
 
-//bottom();
-//tenting_legs();
+// The main case:
+bottom();
+
+// Cover for the micro controller:
 //cover();
+
+// Spacers for the cover screws the going underneath the PCB:
 //pcb_cover_screw_spacers();
-tented_and_tilted_palm_rest();
+
+// Palm rest module that tilts and tents the keyboard case (given the length):
+//tented_and_tilted_palm_rest(100);
+
+// Legs for tilting and tenting the keyboard case (DEPRECATED by palm rest):
+//tenting_legs();
 
 
 ////
@@ -44,17 +54,36 @@ tented_and_tilted_palm_rest();
 
 THICKNESS = 3;
 
-TOLERANCE = 0.3;
+TOLERANCE = 0.4;
 
-TOP_COVER_PCB_DISTANCE = 6;
+MAGNET_DIAMETER = 7;
 
-PLATE_BOTTOM_DISTANCE = 8;
+MAGNET_HEIGHT = 2;
+
+MAGNET_TOLERANCE = 0.2;
+
+TENT_ANGLE = 35;
+
+TILT_ANGLE = -10;
+
+LOW_PROFILE = false;
+
+HALCYON_MODULE_SCREW = true;
+
+
+////
+// Input parameters (advanced) - mostly measurements of the SVGs and hardware!
+////
 
 PLATE_THICKNESS = 1.5;
 
 PCB_THICKNESS = 1.5;
 
-WALL_HEIGHT_FROM_PLATE = 7.2; // 0 for low profile
+TOP_COVER_PCB_DISTANCE = 6;
+
+PLATE_BOTTOM_DISTANCE = 8;
+
+WALL_HEIGHT_FROM_PLATE = 7.2;
 
 SCREW_HEAD_HEIGHT = 1.25;
 
@@ -70,21 +99,11 @@ MODULE_SCREW_SHANK_DIAMETER = 1.5; // halcyon specific
 
 MODULE_SCREW_HEAD_DIAMETER = 3; // halcyon specific
 
-MAGNET_DIAMETER = 7;
-
-MAGNET_HEIGHT = 2;
-
-MAGNET_TOLERANCE = 0.2;
-
 TOP_CONNECTOR_CORNER_OFFSET = 10.5;
 
 SIDE_CONNECTOR_CORNER_OFFSET = 13.5;
 
 TENT_MAGNET_EXTEND = 2;
-
-TENT_ANGLE = 35;
-
-TILT_ANGLE = -10;
 
 TENT_LEG_FEET_HEIGHT = 2;
 
@@ -102,16 +121,15 @@ DISTANCE_FROM_MAGNET_GUIDE_TO_POSITIVE_TILT_POINT = 33.5; // approximated from t
 
 LEG_THICKNESS = 10.2; // approximated from the SVGs
 
+
 ////
 // Calculated parameters - automatically adjusted based on the input parameters!
 ////
 
 SCREW_HEAD_OFFSET_RADIUS = (SCREW_HEAD_DIAMETER - SCREW_SHANK_DIAMETER) / 2;
 
-MODULE_SCREW_HEAD_OFFSET_RADIUS =
-    (MODULE_SCREW_HEAD_DIAMETER - MODULE_SCREW_SHANK_DIAMETER) / 2;
-
-WALL_HEIGHT = PLATE_BOTTOM_DISTANCE + PLATE_THICKNESS + THICKNESS + WALL_HEIGHT_FROM_PLATE;
+WALL_HEIGHT = PLATE_BOTTOM_DISTANCE + PLATE_THICKNESS + THICKNESS +
+    ((LOW_PROFILE) ? 0 : WALL_HEIGHT_FROM_PLATE);
 
 CONNECTOR_CUTOUT_HEIGHT = PLATE_BOTTOM_DISTANCE + PLATE_THICKNESS;
 
@@ -124,6 +142,9 @@ MAGNET_CUTOUT_Z = (THICKNESS - MAGNET_HEIGHT - MAGNET_TOLERANCE) / 2;
 
 COVER_SCREW_Z = THICKNESS - SCREW_HEAD_HEIGHT;
 
+MODULE_SCREW_HEAD_OFFSET_RADIUS =
+    (MODULE_SCREW_HEAD_DIAMETER - MODULE_SCREW_SHANK_DIAMETER) / 2;
+
 COVER_MODULE_SCREW_Z = THICKNESS - MODULE_SCREW_HEAD_HEIGHT;
 
 TENT_MAGNET_OFFSET_RADIUS = MAGNET_OFFSET_RADIUS + TENT_MAGNET_EXTEND;
@@ -135,7 +156,7 @@ LEG_THICKNESS_FROM_MIDDLE_AFTER_TENT = (LEG_THICKNESS * 0.5) * cos(TENT_ANGLE);
 TENT_HEIGHT_UPPER = ((DISTANCE_TO_MAGNET_CLUSTER_MIDDLE + THICKNESS + TOLERANCE +
                       TENT_LEGS_TRANSLATION_DISTANCE - (LEG_THICKNESS * 0.5))
                       * sin(TENT_ANGLE));
-               
+
 TENT_HEIGHT_LOWER = ((DISTANCE_TO_MAGNET_GUIDE + THICKNESS + TOLERANCE - (LEG_THICKNESS * 0.5)
                      ) * sin(TENT_ANGLE));
 
@@ -145,14 +166,36 @@ TENT_LEGS_SUPPORT_HEIGHT = max(min(TENT_HEIGHT_LOWER * 0.5, THICKNESS * 3), THIC
 
 DISTANCE_FROM_MAGNET_GUIDE_TO_CLUSTER_MIDDLE =
                     DISTANCE_TO_MAGNET_CLUSTER_MIDDLE - DISTANCE_TO_MAGNET_GUIDE;
-                    
+
 DISTANCE_FROM_MAGNET_GUIDE_TO_UPPER_LEGS_MIDDLE =
         DISTANCE_FROM_MAGNET_GUIDE_TO_CLUSTER_MIDDLE + TENT_LEGS_TRANSLATION_DISTANCE;
-                    
+
 DISTANCE_FROM_MAGNET_GUIDE_TO_TILT_POINT =
     TILT_ANGLE <= 0 ?
     DISTANCE_FROM_MAGNET_GUIDE_TO_NEGATIVE_TILT_POINT  + THICKNESS + TOLERANCE :
     -DISTANCE_FROM_MAGNET_GUIDE_TO_POSITIVE_TILT_POINT - THICKNESS - TOLERANCE;
+
+
+////
+// Common modules - used in the other main modules!
+////
+
+module magnet_cutouts() {
+    translate([0, 0, MAGNET_CUTOUT_Z]) {
+        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_cutouts.svg", dpi = DPI);
+            }
+        }
+    }
+    translate([0, 0, MAGNET_CUTOUT_Z]) {
+        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
+            offset(r = MAGNET_OFFSET_RADIUS) {
+                import("bottom/magnet_guide_cutout.svg", dpi = DPI);
+            }
+        }
+    }
+}
 
 
 ////
@@ -174,13 +217,15 @@ module cover() {
                 }
             }
         }
-        linear_extrude(height = THICKNESS) {
-            import("cover/module_screw_cutout.svg", dpi = DPI);
-        }
-        translate([0, 0, COVER_MODULE_SCREW_Z]) {
-            linear_extrude(height = MODULE_SCREW_HEAD_HEIGHT) {
-                offset(r = MODULE_SCREW_HEAD_OFFSET_RADIUS) {
-                    import("cover/module_screw_cutout.svg", dpi = DPI);
+        if (HALCYON_MODULE_SCREW) {
+            linear_extrude(height = THICKNESS) {
+                import("cover/module_screw_cutout.svg", dpi = DPI);
+            }
+            translate([0, 0, COVER_MODULE_SCREW_Z]) {
+                linear_extrude(height = MODULE_SCREW_HEAD_HEIGHT) {
+                    offset(r = MODULE_SCREW_HEAD_OFFSET_RADIUS) {
+                        import("cover/module_screw_cutout.svg", dpi = DPI);
+                    }
                 }
             }
         }
@@ -211,23 +256,6 @@ module pcb_cover_screw_spacers() {
 // Bottom - the main case!
 ////
 
-module magnet_cutouts() {
-    translate([0, 0, MAGNET_CUTOUT_Z]) {
-        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
-            offset(r = MAGNET_OFFSET_RADIUS) {
-                import("bottom/magnet_cutouts.svg", dpi = DPI);
-            }
-        }
-    }
-    translate([0, 0, MAGNET_CUTOUT_Z]) {
-        linear_extrude(height = MAGNET_HEIGHT + MAGNET_TOLERANCE) {
-            offset(r = MAGNET_OFFSET_RADIUS) {
-                import("bottom/magnet_guide_cutout.svg", dpi = DPI);
-            }
-        }
-    }
-}
-
 module bottom() {
     difference() {
         union() {
@@ -257,14 +285,14 @@ module bottom() {
                 import("bottom/screw_cutouts.svg", dpi = DPI);
             }
         }
-        translate([TOP_CONNECTOR_CORNER_OFFSET, THICKNESS, THICKNESS]) {
+        translate([TOP_CONNECTOR_CORNER_OFFSET, THICKNESS, THICKNESS-TOLERANCE]) {
             linear_extrude(height = CONNECTOR_CUTOUT_HEIGHT) {
                 offset(delta = TOLERANCE) {
                     import("bottom/connector_cutout.svg", dpi = DPI);
                 }
             }
         }
-        translate([- THICKNESS, - SIDE_CONNECTOR_CORNER_OFFSET, THICKNESS]) {
+        translate([-THICKNESS, -SIDE_CONNECTOR_CORNER_OFFSET, THICKNESS-TOLERANCE]) {
             linear_extrude(height = CONNECTOR_CUTOUT_HEIGHT) {
                 offset(delta = TOLERANCE) {
                     import("bottom/connector_cutout.svg", dpi = DPI);
@@ -287,11 +315,11 @@ module tenting_legs() {
         // Draw legs
         rotate([0, TENT_LEGS_ANGLE, 0]) {
             linear_extrude(height = TENT_HEIGHT_UPPER + 100) {
-                import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                import("legs/tent_legs.svg", dpi = DPI, center = true);
             }
             linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
                 hull() {
-                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                    import("legs/tent_legs.svg", dpi = DPI, center = true);
                 }
             }
         }
@@ -300,22 +328,22 @@ module tenting_legs() {
             rotate([0, TENT_LEGS_ANGLE, 0]) {
                 linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
                     hull() {
-                        import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                        import("legs/tent_legs.svg", dpi = DPI, center = true);
                     }
                 }
             }
             linear_extrude(height = THICKNESS) {
                 hull() {
-                    import("bottom/tent_legs.svg", dpi = DPI, center = true);
+                    import("legs/tent_legs.svg", dpi = DPI, center = true);
                 }
             }
         }
-        
+
     };
 
     //----------------------------------------------------------
 
-    module UpperMagnetPlate() {        
+    module UpperMagnetPlate() {
         linear_extrude(height = THICKNESS) {
             offset(r = TENT_MAGNET_OFFSET_RADIUS) {
                 hull() {
@@ -359,18 +387,18 @@ module tenting_legs() {
             }
         }
     };
-    
+
     //----------------------------------------------------------
 
     module LowerLegs() {
         // Draw legs
         rotate([0, TENT_LEGS_ANGLE, 0]) {
             linear_extrude(height = TENT_HEIGHT_LOWER + 100) {
-                import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                import("legs/tent_legs_lower.svg", dpi = DPI, center = true);
             }
             linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
                 hull() {
-                    import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                    import("legs/tent_legs_lower.svg", dpi = DPI, center = true);
                 }
             }
         }
@@ -379,22 +407,22 @@ module tenting_legs() {
             rotate([0, TENT_LEGS_ANGLE, 0]) {
                 linear_extrude(height = TENT_LEGS_SUPPORT_HEIGHT) {
                     hull() {
-                        import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                        import("legs/tent_legs_lower.svg", dpi = DPI, center = true);
                     }
                 }
             }
             linear_extrude(height = THICKNESS) {
                 hull() {
-                    import("bottom/tent_legs_lower.svg", dpi = DPI, center = true);
+                    import("legs/tent_legs_lower.svg", dpi = DPI, center = true);
                 }
             }
         }
-        
+
     };
 
     //----------------------------------------------------------
 
-    module LowerMagnetPlate() {        
+    module LowerMagnetPlate() {
         linear_extrude(height = THICKNESS) {
             offset(r = TENT_MAGNET_OFFSET_RADIUS) {
                 hull() {
@@ -417,7 +445,7 @@ module tenting_legs() {
     };
 
     //----------------------------------------------------------
-    
+
     module Lower() {
         difference() {
             union() {
@@ -430,7 +458,7 @@ module tenting_legs() {
             }
         }
     };
-    
+
     //----------------------------------------------------------
 
     module Middle() {
@@ -452,9 +480,12 @@ module tenting_legs() {
     //----------------------------------------------------------
 
     // TODO the tilt is awfully complicated - currently off by +2mm height for tent 40 and tilt -10
+    // Follow up on TODO; this module was dropped in favor of the palm rest module.
     difference() {
         rotate([TILT_ANGLE, 0, 0]) {
-            translate([0, -DISTANCE_FROM_MAGNET_GUIDE_TO_TILT_POINT, TENT_HEIGHT_LOWER - TENT_LEG_FEET_HEIGHT]) {
+            translate([0,
+                       -DISTANCE_FROM_MAGNET_GUIDE_TO_TILT_POINT,
+                       TENT_HEIGHT_LOWER - TENT_LEG_FEET_HEIGHT]) {
                 rotate([0, 180 - TENT_LEGS_ANGLE, 0]) {
                 translate([LEG_THICKNESS - LEG_THICKNESS_FROM_MIDDLE_AFTER_TENT, 0, 0]) {
                     translate([DISTANCE_FROM_MAGNET_GUIDE_TO_CLUSTER_MIDDLE, 0, 0]) { Upper(); };
@@ -477,11 +508,10 @@ module tenting_legs() {
 // Palm rest -- flexible, overengineered, and hard to print!
 ////
 
-module tented_and_tilted_palm_rest()
+module tented_and_tilted_palm_rest(REST_LENGTH)
 {
     //----------------------------------------------------------
 
-    REST_LENGTH = 100; // mm
     REST_SLOPE = 15; // mm
     REST_WIDTH = 57; // mm
     REST_HEIGHT = 10.250; // mm
@@ -490,7 +520,7 @@ module tented_and_tilted_palm_rest()
     DISTANCE_TO_X = 270 + 84 - (171 + REST_HEIGHT) + THICKNESS - TOLERANCE; // mm
     TENT_ANGLE_PALM = TENT_ANGLE * 1; // deg
     BOTTOM_HEIGHT = WALL_HEIGHT + TOLERANCE + THICKNESS; // mm
-    
+
     //----------------------------------------------------------
 
     module tilt(T = TILT_ANGLE) {
@@ -520,7 +550,7 @@ module tented_and_tilted_palm_rest()
             }
         }
     }
-    
+
     //----------------------------------------------------------
 
     module solid_bottom() {
@@ -530,7 +560,7 @@ module tented_and_tilted_palm_rest()
             }
         }
     }
-    
+
     //----------------------------------------------------------
 
     module rest() {
@@ -555,7 +585,7 @@ module tented_and_tilted_palm_rest()
             }
         }
     }
-    
+
     //----------------------------------------------------------
 
     module rest_ledge() {
@@ -574,8 +604,11 @@ module tented_and_tilted_palm_rest()
         }
 
         hull() {
-            translate([REST_LEDGE_OFFSET_DIFF + MAGIC, -REST_HEIGHT, 0]) {
-                extrude_ledge("rest/botledge.svg", BOTTOM_HEIGHT, LEDGE_OFFSET);
+            translate([REST_LEDGE_OFFSET_DIFF + MAGIC, -REST_HEIGHT, BOTTOM_HEIGHT - 1]) {
+                extrude_ledge("rest/botledge.svg", 1, LEDGE_OFFSET);
+            }
+            translate([REST_LEDGE_OFFSET_DIFF, -REST_HEIGHT, 0]) {
+                extrude_ledge("rest/botledge.svg", 1, LEDGE_OFFSET);
             }
             translate([REST_LEDGE_OFFSET_DIFF, -REST_LENGTH-REST_LEDGE_OFFSET_DIFF, 0]) {
                 extrude_ledge("rest/botledge.svg", LEDGE_HEIGHT, LEDGE_OFFSET);
@@ -601,7 +634,7 @@ module tented_and_tilted_palm_rest()
             rest_ledge();
         }
     }
-    
+
     //----------------------------------------------------------
 
     module rest_bottom() {
@@ -662,10 +695,12 @@ module tented_and_tilted_palm_rest()
             }
         }
     }
-    
+
     //----------------------------------------------------------
 
     module adjusted_legs() {
+        MAGIC = 0.2;
+
         module extrude_leg(name) {
             linear_extrude(height = THICKNESS) {
                 offset(r = REST_OFFSET) {
@@ -677,14 +712,14 @@ module tented_and_tilted_palm_rest()
         module adjust_leg_in(T) {
             hull() {
                 tent(T) { tilt() { children(); } }
-                children();
+                translate([0, 0, MAGIC]) { children(); }
             }
         }
 
         module adjust_leg_out(T, scale = 1) {
             hull() {
                 tent(T) { tilt() { children(); } }
-                translate([scale*LEG_THICKNESS, 0, 0]) { children(); }
+                translate([scale*LEG_THICKNESS, 0, MAGIC]) { children(); }
             }
         }
 
@@ -743,6 +778,6 @@ module tented_and_tilted_palm_rest()
     {
         tent(TENT_ANGLE) { tilt() { translate([0, 0, THICKNESS]) { bottom(); } } }
     }
-    
+
     //----------------------------------------------------------
 }
