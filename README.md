@@ -7,4 +7,7 @@ their renders have been test printed on an Ender 3 v2 or Prusa I3 MK3S+.
 
 # Images
 
-![Lily 58 case](lily58/lily58case.jpg)
+## Lily58
+
+![Lily58 case](lily58/lily58case.jpg)
+![Lily58 case](lily58/showcase.gif)
